@@ -35,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
-   /* private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthlistener;*/
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthlistener;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
         mViewPager.setCurrentItem(1);
 
-       // mAuth=FirebaseAuth.getInstance();
+        mAuth=FirebaseAuth.getInstance();
 
 
     }
@@ -86,23 +86,22 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.logout) {
-           /* mAuth.signOut();
-
-            mAuthlistener=new FirebaseAuth.AuthStateListener() {
-                @Override
-                public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-
-                    if(firebaseAuth.getCurrentUser()==null)
-                    {
-                        startActivity(new Intent(MainActivity.this, Login.class));
-                    }
-                }
-            };*/
+           logout();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+
+    private void logout()
+    {
+        FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(MainActivity.this, Login.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
     /**
      * A placeholder fragment containing a simple view.
      */
