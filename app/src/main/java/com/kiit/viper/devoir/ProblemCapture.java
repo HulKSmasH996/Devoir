@@ -2,6 +2,7 @@ package com.kiit.viper.devoir;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,8 +22,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,18 +54,24 @@ public class ProblemCapture extends Fragment {
     public static final int ACTIVITY_START_CAM_APP=0;
    // TextView txt;
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         return rootView;
 
     }
 
+
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onActivityCreated(savedInstanceState);
+
         // get the button view
         button = (ImageView) getView().findViewById(R.id.button);
       //  problem = (ImageView) getView().findViewById(R.id.Problem);

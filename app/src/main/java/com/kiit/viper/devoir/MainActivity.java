@@ -1,5 +1,7 @@
 package com.kiit.viper.devoir;
 
+import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,6 +21,8 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 public class MainActivity extends AppCompatActivity {
 
     /**
@@ -30,6 +34,9 @@ public class MainActivity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
+
+   /* private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthlistener;*/
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -57,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
 
         mViewPager.setCurrentItem(1);
 
+       // mAuth=FirebaseAuth.getInstance();
+
+
     }
 
 
@@ -75,8 +85,19 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.logout) {
+           /* mAuth.signOut();
+
+            mAuthlistener=new FirebaseAuth.AuthStateListener() {
+                @Override
+                public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
+                    if(firebaseAuth.getCurrentUser()==null)
+                    {
+                        startActivity(new Intent(MainActivity.this, Login.class));
+                    }
+                }
+            };*/
         }
 
         return super.onOptionsItemSelected(item);
