@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -29,7 +30,20 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+//import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+
+    GoogleApiClient mGoogleApiClient;
     private static final int PERMISSION_REQUEST_CODE = 1;
 
     @Override
@@ -68,6 +84,12 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API)
+                .build();
 
         mViewPager.setCurrentItem(1);
         mAuth= FirebaseAuth.getInstance();
@@ -81,6 +103,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
 
     private boolean checkPermission() {
 
@@ -140,20 +167,40 @@ public class MainActivity extends AppCompatActivity {
     }
     private void logout()
     {
-        FirebaseAuth.getInstance().signOut();
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        if(user != null)
+        {
+            Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                    new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(@NonNull Status status) {
+                            Toast.makeText(getApplicationContext(), "Signed out Successfully.",
+                                    Toast.LENGTH_SHORT).show();
+                            //shortRoidPreferences.setPrefBoolean("logged_in",false);
+                            Intent signInIntent = new Intent(getApplicationContext(),Login.class);
+                            //signInIntent.putExtra("SIGNIN_ACTION","LOGOUT");
+                            startActivity(signInIntent);
+                            finish();
+
+                        }
+                    });
+        }
+        /*FirebaseAuth.getInstance().signOut();
 
 
         Intent intent = new Intent(MainActivity.this, Login.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-        /**/
+        *//**//*
         //finish();
         //System.exit(2);
         ClearCache.getInstance().clearApplicationData();
         AlarmManager mgr = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, PendingIntent.getActivity(this.getBaseContext(), 0, new    Intent(getIntent()), getIntent().getFlags()));
-        android.os.Process.killProcess(android.os.Process.myPid());
+        android.os.Process.killProcess(android.os.Process.myPid());*/
         //System.exit(2);
+
     }
     /**
      * A placeholder fragment containing a simple view.

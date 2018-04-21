@@ -53,6 +53,8 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -114,7 +116,7 @@ public class ProblemCapture extends Fragment {
         button = (ImageView) getView().findViewById(R.id.button);
         progressDialog = new ProgressDialog(getContext());
 
-       /* locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        /*locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             buildAlertMessageNoGps();
 
@@ -160,6 +162,8 @@ public class ProblemCapture extends Fragment {
         //AlertDialog alert = logoutBuilder.create();
         final Uri uri = Uri.fromFile(photoFile);
         final StorageReference reference= mStorageRef.child("Photos").child(new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
+        //String downloadURL=mStorageRef.child(reference.toString()).getDownloadUrl().toString();
+        //final StorageReference downloadUrl=FirebaseStorage.getInstance("Photos").getReference(reference.toString()).refFromUrl(downloadUrl).toString()
         final Dialog dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.problemcapturedialog);
         dialog.setTitle("    Problem Submission");
@@ -178,7 +182,7 @@ public class ProblemCapture extends Fragment {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 switch (i) {
                     case 0:{
-                        ed.setText("Dead Animal(s)");
+                        ed.setText("Garbage Dump");
                         break;
                     }
                     case 1:{
@@ -186,18 +190,26 @@ public class ProblemCapture extends Fragment {
                         break;
                     }
                     case 2:{
-                        ed.setText("Garbage Dump");
+                        ed.setText("Dead Animal(s)");
                         break;
                     }
                     case 3:{
-                        ed.setText("No Electricity");
+                        ed.setText("Electricity/Power Dept.");
                         break;
                     }
                     case 4:{
-                        ed.setText("No Water Supply");
+                        ed.setText("Water Supply Dept");
                         break;
                     }
                     case 5:{
+                        ed.setText("Transport Authority");
+                        break;
+                    }
+                    case 6:{
+                        ed.setText("Lost & Found");
+                        break;
+                    }
+                    case 7:{
                         Toast.makeText(getContext(), "Enter Your Issue", Toast.LENGTH_SHORT).show();
                         ed.setVisibility(View.VISIBLE);
 
@@ -242,19 +254,20 @@ public class ProblemCapture extends Fragment {
                 progressDialog.setMessage("Uploading Image ...");
                 progressDialog.setCancelable(false);
                 progressDialog.show();
-                saveIssue(reference);
+                //saveIssue(reference);
                 reference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        String downloadURL=taskSnapshot.getDownloadUrl().toString();
+                        saveIssue(downloadURL);
                         progressDialog.dismiss();
                         Toast.makeText(getContext(),"Submission Done ...",Toast.LENGTH_LONG).show();
-
 
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
+                        Toast.makeText(getContext(),"Error uploading data...",Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -396,7 +409,7 @@ public class ProblemCapture extends Fragment {
         //textView.setText(city);
     }
 
-    public void saveIssue(final StorageReference reference){
+    public void saveIssue(final String reference){
         final Activity activity=   getActivity();
         final String desc=description.getText().toString();
         final String issueType=ed.getText().toString();
@@ -409,7 +422,8 @@ public class ProblemCapture extends Fragment {
             issue.setUserID(FirebaseAuth.getInstance().getCurrentUser().getUid());
             issue.setUserName(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
             issue.setLatlongi(lat_longi);
-            issue.setImageUrl(reference.toString());
+            issue.setImageUrl(reference);
+
             FireBaseUtil.addTaskToFireBase(activity, issue, new FireBaseUtil.ChangeListener() {
                 @Override
                 public void onchange(String issueID) {
@@ -418,10 +432,25 @@ public class ProblemCapture extends Fragment {
                     issue.setUserID(FirebaseAuth.getInstance().getCurrentUser().getUid());
                     issue.setUserName(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
                     issue.setLatlongi(lat_longi);
-                    issue.setImageUrl(reference.toString());
+                    issue.setImageUrl(reference);
                     FireBaseUtil.addTaskToUser(activity, issueID);
                 }
             });
+
+
+            /*
+            This is simpler way to push complex data to firebase, but here we havenot set up connection
+            with users and issues
+
+            try {
+                DatabaseReference myFirebData = FirebaseDatabase.getInstance().getReference();
+                myFirebData.child("issues").push().setValue(issue);
+            }
+
+            catch (Exception e){}
+
+            */
+
         }
 
     }
@@ -437,5 +466,7 @@ public class ProblemCapture extends Fragment {
         }
         return false;
     }
+
+
 
 }

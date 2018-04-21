@@ -55,7 +55,7 @@ public class Login extends AppCompatActivity{
     private GoogleApiClient mGoogleApiClient;
 
     private FirebaseAuth mAuth;
-    private FirebaseUser fUser;
+    public static FirebaseUser fUser;
     private static DatabaseReference mDatabase;
     FirebaseDatabase database;
     private FirebaseAuth.AuthStateListener mAuthListner;
@@ -198,6 +198,14 @@ public class Login extends AppCompatActivity{
         mAuth.addAuthStateListener(mAuthListner);
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        // mGoogleApiClient.disconnect();
+        if (mAuthListner != null) {
+            mAuth.removeAuthStateListener(mAuthListner);
+        }
+    }
 
 
     private void signIn() {
@@ -245,12 +253,12 @@ public class Login extends AppCompatActivity{
                             newUser*/
                             DatabaseReference mDBRef=FirebaseDatabase.getInstance().getReference("users").child(id1);
 
-                            mDBRef.child("Name").setValue(mAuth.getCurrentUser().getDisplayName());
+                            mDBRef.child("Name").setValue(fUser.getDisplayName());
                             mDBRef.child("email").setValue(fUser.getEmail());
                             mDBRef.child("userID").setValue(id1);
                             mDBRef.child("issueIDs").setValue(",");
 
-                            Toast.makeText(getApplicationContext(), "Employee Added Successfully", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Added Successfully", Toast.LENGTH_SHORT).show();
                         }
 
                         else{

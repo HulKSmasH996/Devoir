@@ -4,11 +4,13 @@
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string-array name="feedbacktypelist">
-        <item>Dead Animal(s)</item>
-        <item>Dustbins not Cleaned</item>
         <item>Garbage Dump</item>
-        <item>No Electricity</item>
-        <item>No Water Supply</item>
+        <item>Dustbins not Cleaned</item>
+        <item>Dead Animal(s)</item>
+        <item>Electricity/Power Dept.</item>
+        <item>Water Supply Dept</item>
+        <item>Transport Authority</item>
+        <item>Lost and Found</item>
         <item>Other</item>
 
     </string-array>
